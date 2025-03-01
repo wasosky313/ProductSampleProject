@@ -1,4 +1,12 @@
-# copy_cell_records
+# Template for dotnet projects
 
-## Db diagram
-- https://dbdiagram.io/d/CyberCopySolution-67bf1b04263d6cf9a08a5991
+## TODO
+- [ ] Db diagram.
+- [ ] Improve DB entities with more tables and relationships
+- [ ] Make Dockerfile to run this application.
+- [ ] Make docker-compose to up db, redpanda and others tools
+- [ ] Use kafka in this template
+- and more
+
+
+
