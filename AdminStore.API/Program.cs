@@ -1,4 +1,4 @@
-using AdminStore.Application.Services;
+using AdminStore.Application.UseCases.Products;
 using AdminStore.Domain.Interfaces;
 using AdminStore.Infrastructure.Data;
 using AdminStore.Infrastructure.Repositories;
@@ -10,9 +10,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AdminStoreContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Adicionar serviços da aplicação
+// Registrar repositórios
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<ProductService>();
+
+// Registrar casos de uso
+builder.Services.AddScoped<GetProductsUseCase>();
+builder.Services.AddScoped<GetProductByIdUseCase>();
+builder.Services.AddScoped<AddProductUseCase>();
+builder.Services.AddScoped<UpdateProductUseCase>();
+builder.Services.AddScoped<DeleteProductUseCase>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -31,6 +37,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-// para conseguir usa-la em AdminStore.API.Tests/CustomWebApplicationFactory.cs
-public partial class Program { }
