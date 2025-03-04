@@ -1,3 +1,4 @@
+using AdminStore.Application.DTOs.Products;
 using AdminStore.Application.UseCases.Products;
 using AdminStore.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -29,40 +30,35 @@ namespace AdminStore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetAllProducts()
+        public async Task<ActionResult<IEnumerable<ProductOutput>>> GetAllProducts()
         {
             var products = await _getProductsUseCase.Execute();
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Product>> GetProductById(int id)
+        public async Task<ActionResult<ProductOutput>> GetProductById(int id)
         {
-            var product = await _getProductByIdUseCase.Execute(id);
-            if (product == null)
+            var productOutput = await _getProductByIdUseCase.Execute(id);
+            if (productOutput == null)
             {
                 return NotFound();
             }
-            return Ok(product);
+            return Ok(productOutput);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductInput productInput)
         {
-            await _addProductUseCase.Execute(product);
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            var result = await _addProductUseCase.Execute(productInput);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(int id, [FromBody] Product product)
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] ProductInput productInput)
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            await _updateProductUseCase.Execute(product);
-            return NoContent();
+            var updatedProduct = await _updateProductUseCase.Execute(id, productInput);
+            return Ok(updatedProduct);
         }
 
         [HttpDelete("{id}")]

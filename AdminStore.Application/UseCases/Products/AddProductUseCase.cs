@@ -1,6 +1,6 @@
 using AdminStore.Domain.Entities;
 using AdminStore.Domain.Interfaces;
-using System.Threading.Tasks;
+using AdminStore.Application.DTOs.Products;
 
 namespace AdminStore.Application.UseCases.Products
 {
@@ -13,9 +13,24 @@ namespace AdminStore.Application.UseCases.Products
             _productRepository = productRepository;
         }
 
-        public async Task Execute(Product product)
+        public async Task<ProductOutput> Execute(ProductInput productInput)
         {
-            await _productRepository.AddProduct(product);
+            var product = new Product
+            {
+                Name = productInput.Name,
+                Price = productInput.Price
+            };
+            
+            var productSaved = await _productRepository.AddProduct(product);
+            
+            var productOutput = new ProductOutput
+            {
+                Id = productSaved.Id,
+                Name = productSaved.Name,
+                Price = productSaved.Price
+            };
+            
+            return productOutput;
         }
     }
 }

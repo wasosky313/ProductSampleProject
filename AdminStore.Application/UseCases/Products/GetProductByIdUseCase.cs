@@ -1,3 +1,4 @@
+using AdminStore.Application.DTOs.Products;
 using AdminStore.Domain.Entities;
 using AdminStore.Domain.Interfaces;
 
@@ -12,9 +13,16 @@ namespace AdminStore.Application.UseCases.Products
             _productRepository = productRepository;
         }
 
-        public async Task<Product> Execute(int id)
+        public async Task<ProductOutput> Execute(int id)
         {
-            return await _productRepository.GetProductById(id);
+            var product = await _productRepository.GetProductById(id);
+            var productOutput = new ProductOutput
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+            };
+            return productOutput;
         }
     }
 }

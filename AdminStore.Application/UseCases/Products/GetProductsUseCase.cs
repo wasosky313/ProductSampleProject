@@ -1,6 +1,7 @@
 using AdminStore.Domain.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AdminStore.Application.DTOs.Products;
 using AdminStore.Domain.Entities;
 
 namespace AdminStore.Application.UseCases.Products
@@ -14,9 +15,18 @@ namespace AdminStore.Application.UseCases.Products
             _productRepository = productRepository;
         }
 
-        public async Task<IEnumerable<Product>> Execute()
+        public async Task<IEnumerable<ProductOutput>> Execute()
         {
-            return await _productRepository.GetAllProducts();
+            var products = await _productRepository.GetAllProducts();
+
+            var productOutputs = products.Select(product => new ProductOutput
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price
+            });
+
+            return productOutputs;
         }
     }
 }
