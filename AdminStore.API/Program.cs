@@ -37,3 +37,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// para conseguir usa-la em AdminStore.API.Tests/CustomWebApplicationFactory.cs
+public partial class Program { }

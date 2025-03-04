@@ -5,3 +5,5 @@ revision:
 migrate:
 	dotnet ef database update --project AdminStore.Infrastructure --startup-project AdminStore.API
 
+test:
+	dotnet test
