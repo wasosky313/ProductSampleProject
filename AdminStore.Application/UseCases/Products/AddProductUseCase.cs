@@ -18,7 +18,8 @@ namespace AdminStore.Application.UseCases.Products
             var product = new Product
             {
                 Name = productInput.Name,
-                Price = productInput.Price
+                Price = productInput.Price,
+                CategoryId = 1, // this is only for test, make a get for a real situation
             };
             
             var productSaved = await _productRepository.AddProduct(product);
@@ -27,7 +28,8 @@ namespace AdminStore.Application.UseCases.Products
             {
                 Id = productSaved.Id,
                 Name = productSaved.Name,
-                Price = productSaved.Price
+                Price = productSaved.Price,
+                CategoryName = productSaved.Category.Name,
             };
             
             return productOutput;

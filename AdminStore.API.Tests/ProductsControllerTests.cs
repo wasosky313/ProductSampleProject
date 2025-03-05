@@ -22,21 +22,37 @@ namespace AdminStore.API.Tests
         public async Task AddProduct_ShouldReturnCreated_WhenInputIsValid()
         {
             // Arrange
-            var payload = new ProductInput { Name = "Product 1", Price = 10.0m };
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AdminStoreContext>();
 
-            // Act
-            var response = await _client.PostAsJsonAsync("/api/products", payload);
+                // Criar o produto diretamente no banco de dados
+                // TODO criar helper function for create Entities 
+                var category = new Category { Name = "Category 1" };
+                dbContext.Categories.Add(category);
+                await dbContext.SaveChangesAsync();
 
-            // Assert
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode); // TODO mudar response pra Created
+                var payload = new ProductInput { Name = "Product 1", Price = 10.0m };
 
-            var productOutput = await response.Content.ReadFromJsonAsync<ProductOutput>();
-            Assert.NotNull(productOutput);
-            Assert.Equal("Product 1", productOutput.Name);
-            Assert.Equal(10.0m, productOutput.Price);
+                // Act
+                var response = await _client.PostAsJsonAsync("/api/products", payload);
+
+                // Assert
+                response.EnsureSuccessStatusCode();
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode); // TODO mudar response pra Created
+
+                var productOutput = await response.Content.ReadFromJsonAsync<ProductOutput>();
+                Assert.NotNull(productOutput);
+                Assert.Equal("Product 1", productOutput.Name);
+                Assert.Equal(10.0m, productOutput.Price);
+                
+                // Limpar o banco de dados após o teste 
+                // TODO tentar botar no factory
+                dbContext.Categories.Remove(category);
+                await dbContext.SaveChangesAsync();
+            }
         }
-        
+
         [Fact]
         public async Task GetProductById_ShouldReturnProduct_WhenProductExists()
         {
@@ -46,10 +62,16 @@ namespace AdminStore.API.Tests
                 var dbContext = scope.ServiceProvider.GetRequiredService<AdminStoreContext>();
 
                 // Criar o produto diretamente no banco de dados
+                // TODO criar helper function for create Entities 
+                var category = new Category { Name = "Category 1" };
+                dbContext.Categories.Add(category);
+                await dbContext.SaveChangesAsync();
+                
                 var product = new Product
                 {
                     Name = "Product Sale",
-                    Price = 112.0m
+                    Price = 112.0m,
+                    CategoryId = category.Id,
                 };
                 dbContext.Products.Add(product);
                 await dbContext.SaveChangesAsync();
@@ -66,11 +88,15 @@ namespace AdminStore.API.Tests
                 Assert.Equal(product.Id, productOutput.Id);
                 Assert.Equal("Product Sale", productOutput.Name);
                 Assert.Equal(112.0m, productOutput.Price);
+                Assert.Equal("Category 1", productOutput.CategoryName);
 
                 // Limpar o banco de dados após o teste 
                 // TODO tentar botar no factory
+                // TODO tentar remover o banco tudo em vez de tabela por tabela
+                dbContext.Categories.Remove(category);
                 dbContext.Products.Remove(product);
                 await dbContext.SaveChangesAsync();
+
             }
         }
     }

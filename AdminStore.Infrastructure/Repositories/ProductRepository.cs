@@ -16,18 +16,27 @@ namespace AdminStore.Infrastructure.Repositories
 
         public async Task<IEnumerable<Product>> GetAllProducts()
         {
-            return await _context.Products.ToListAsync();
+            var products = await _context.Products
+                .Include(p => p.Category) // carrega a categoria pra cada produto (por isso não funcionou com Reference que é pra um objeto só) 
+                .ToListAsync(); // Converte a consulta em uma lista
+
+            return products;
         }
 
         public async Task<Product> GetProductById(int id)
         {
-            return await _context.Products.FindAsync(id);
+            var product = await _context.Products.FindAsync(id);
+            await _context.Entry(product).Reference(p => p.Category).LoadAsync();
+            return product;
         }
 
         public async Task<Product> AddProduct(Product product)
         {
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
+            
+            // Carrega a propriedade de navegação Category manualmente
+            await _context.Entry(product).Reference(p => p.Category).LoadAsync();
             return product;
         }
 

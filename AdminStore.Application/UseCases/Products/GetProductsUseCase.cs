@@ -23,7 +23,8 @@ namespace AdminStore.Application.UseCases.Products
             {
                 Id = product.Id,
                 Name = product.Name,
-                Price = product.Price
+                Price = product.Price,
+                CategoryName = product.Category.Name,
             });
 
             return productOutputs;
